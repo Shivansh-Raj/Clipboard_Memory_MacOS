@@ -229,11 +229,15 @@ public final class HistoryStore: @unchecked Sendable {
         }
     }
 
-    /// Removes history. Pinned entries survive when `keepPinned` is true.
-    public func clear(keepPinned: Bool) {
+    /// Removes history. Pinned (and optionally favourite) entries survive.
+    public func clear(keepPinned: Bool, keepFavorites: Bool = false) {
         lock.lock(); defer { lock.unlock() }
-        let files = (try? query("SELECT image_file FROM entries WHERE image_file IS NOT NULL" + (keepPinned ? " AND pinned = 0" : ""), []) { Self.str($0, 0) }) ?? []
-        _ = try? run("DELETE FROM entries" + (keepPinned ? " WHERE pinned = 0" : ""))
+        var keep: [String] = []
+        if keepPinned { keep.append("pinned = 0") }
+        if keepFavorites { keep.append("favorite = 0") }
+        let cond = keep.isEmpty ? "" : " WHERE " + keep.joined(separator: " AND ")
+        let files = (try? query("SELECT image_file FROM entries WHERE image_file IS NOT NULL" + (keep.isEmpty ? "" : " AND " + keep.joined(separator: " AND ")), []) { Self.str($0, 0) }) ?? []
+        _ = try? run("DELETE FROM entries" + cond)
         for case let f? in files { try? FileManager.default.removeItem(at: imagesDirectory.appendingPathComponent(f)) }
         _ = try? exec("VACUUM")
     }

@@ -105,6 +105,10 @@ private func tempStore() throws -> HistoryStore {
         s.setPinned(a.id, true)
         s.clear(keepPinned: true)
         #expect(s.count() == 1)
+        let f = try s.save(NewClip(kind: .text, text: "fav")); s.setFavorite(f.id, true)
+        _ = try s.save(NewClip(kind: .text, text: "plain"))
+        s.clear(keepPinned: true, keepFavorites: true)
+        #expect(s.count() == 2)
         s.clear(keepPinned: false)
         #expect(s.count() == 0)
     }

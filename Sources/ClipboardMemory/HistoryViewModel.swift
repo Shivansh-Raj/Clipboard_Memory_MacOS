@@ -173,6 +173,24 @@ final class HistoryViewModel: ObservableObject {
         showToast("\(name) – copied as new entry")
     }
 
+    /// Clears everything except pinned and favourite entries, after confirmation.
+    func clearUnpinned() {
+        beginModal?()
+        let a = NSAlert()
+        a.messageText = "Clear clipboard history?"
+        a.informativeText = "All entries except pinned and favourite ones will be permanently deleted."
+        a.alertStyle = .warning
+        a.addButton(withTitle: "Clear")
+        a.addButton(withTitle: "Cancel")
+        NSApp.activate(ignoringOtherApps: true)
+        let response = a.runModal()
+        endModal?()
+        guard response == .alertFirstButtonReturn else { return }
+        store.clear(keepPinned: true, keepFavorites: true)
+        reload(selectFirst: true)
+        showToast("Cleared – pinned and favourites kept")
+    }
+
     func openLink() {
         guard let e = selected else { return }
         var s = e.text.trimmingCharacters(in: .whitespacesAndNewlines)

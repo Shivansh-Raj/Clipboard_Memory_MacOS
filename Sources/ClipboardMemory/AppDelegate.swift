@@ -148,12 +148,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         a.messageText = "Clear clipboard history?"
         a.informativeText = "This permanently deletes saved clipboard entries from this Mac. It can’t be undone."
         a.alertStyle = .warning
-        a.addButton(withTitle: "Clear, Keep Pinned")
+        a.addButton(withTitle: "Clear, Keep Pinned & Favourites")
         a.addButton(withTitle: "Clear Everything")
         a.addButton(withTitle: "Cancel")
         NSApp.activate(ignoringOtherApps: true)
         switch a.runModal() {
-        case .alertFirstButtonReturn: context.store.clear(keepPinned: true)
+        case .alertFirstButtonReturn: context.store.clear(keepPinned: true, keepFavorites: true)
         case .alertSecondButtonReturn: context.store.clear(keepPinned: false)
         default: return
         }

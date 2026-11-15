@@ -138,6 +138,8 @@ struct HistoryView: View {
     private var footer: some View {
         HStack(spacing: 14) {
             Text(vm.total == vm.entries.count || vm.entries.isEmpty ? "\(vm.total) items" : "\(vm.entries.count) of \(vm.total) items")
+            Button { vm.clearUnpinned() } label: { Label("Clear", systemImage: "trash.slash") }
+                .buttonStyle(.plain).help("Clear history, keeping pinned and favourites")
             Spacer()
             hint("↩", "Copy"); hint("⌘↩", "Copy & close"); hint("⌘P", "Pin"); hint("⌘D", "Favourite"); hint("⌫", "Delete"); hint("⇥", "Filter")
         }
